@@ -5,14 +5,17 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { motion } from "framer-motion"
 import { ArrowUpRight, Play, Award, Calendar, Clock, Sun, Moon, Youtube } from "lucide-react"
-import { projects } from "../../projects"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
+import { useProjects } from "@/hooks/useProjects"
 import Link from "next/link"
+import YouTubeModal from "@/components/youtube-modal"
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <main className="min-h-screen bg-background text-foreground overflow-x-hidden relative">
+      {/* Subtle background gradient */}
+      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-muted/20 -z-10" />
       <SiteNav />
       <HeroSection />
       <FeaturedProjectSection />
@@ -31,6 +34,16 @@ function SiteNav() {
     setMounted(true)
   }, [])
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }
+  }
+
   return (
     <motion.header 
       initial={{ y: -100 }}
@@ -48,50 +61,63 @@ function SiteNav() {
           </span>
         </motion.div>
         <nav className="hidden gap-8 text-sm md:flex">
-          <motion.a 
-            href="#featured" 
-            className="text-muted-foreground hover:text-foreground transition-colors"
+          <motion.button 
+            onClick={() => scrollToSection('featured')}
+            className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.95 }}
           >
             Featured
-          </motion.a>
-          <motion.a 
-            href="#about" 
-            className="text-muted-foreground hover:text-foreground transition-colors"
+          </motion.button>
+          <motion.button 
+            onClick={() => scrollToSection('about')}
+            className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.95 }}
           >
             About
-          </motion.a>
-          <motion.a 
-            href="#projects" 
-            className="text-muted-foreground hover:text-foreground transition-colors"
+          </motion.button>
+          <motion.button 
+            onClick={() => scrollToSection('projects')}
+            className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.95 }}
           >
             Projects
-          </motion.a>
-          <motion.a 
-            href="#contact" 
-            className="text-muted-foreground hover:text-foreground transition-colors"
+          </motion.button>
+          <motion.button 
+            onClick={() => scrollToSection('contact')}
+            className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.95 }}
           >
             Contact
-          </motion.a>
+          </motion.button>
         </nav>
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-          >
-            {mounted ? (
-              theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />
-            ) : (
-              <div className="h-4 w-4" />
-            )}
-          </Button>
-          <Button size="sm">
-            Let&apos;s Talk
-          </Button>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              className="hover:bg-primary/10"
+            >
+              {mounted ? (
+                theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />
+              ) : (
+                <div className="h-4 w-4" />
+              )}
+            </Button>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button 
+              size="sm"
+              onClick={() => scrollToSection('contact')}
+              className="bg-primary hover:bg-primary/90"
+            >
+              Let&apos;s Talk
+            </Button>
+          </motion.div>
         </div>
       </div>
     </motion.header>
@@ -101,36 +127,45 @@ function SiteNav() {
 
 // Hero Section
 function HeroSection() {
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }
+  }
+  
   return (
     <section className="min-h-screen flex items-center justify-center px-6 pt-16">
       <div className="mx-auto w-full max-w-6xl text-center">
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
         >
           <motion.h1 
-            className="text-4xl sm:text-6xl lg:text-8xl font-bold tracking-tight mb-6"
+            className="text-5xl sm:text-7xl lg:text-9xl font-black tracking-tight mb-8 leading-[0.9]"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <span className="text-foreground">
+            <span className="text-foreground block">
               Video
             </span>
-            <br />
-            <span className="text-primary">
+            <span className="text-primary block bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
               Editor
             </span>
           </motion.h1>
           
           <motion.p 
-            className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed"
+            className="text-xl sm:text-2xl text-muted-foreground/80 mb-12 max-w-3xl mx-auto leading-relaxed font-light"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Cutting stories with rhythm and taste. Commercials, music videos, narrative - delivered fast with a director&apos;s eye and an engineer&apos;s rigor.
+            Cutting stories with rhythm and taste. Commercials, music videos, narrative — delivered fast with a director&apos;s eye and an engineer&apos;s rigor.
           </motion.p>
           
           <motion.div 
@@ -139,21 +174,33 @@ function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <Button 
-              size="lg" 
-              className="px-8 py-6 text-lg"
+            <motion.div
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <Play className="mr-2 h-5 w-5" />
-              Watch Reel
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="px-8 py-6 text-lg"
+              <Button 
+                size="lg" 
+                className="px-10 py-6 text-lg bg-primary hover:bg-primary/90 shadow-lg hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 rounded-xl font-semibold"
+                onClick={() => scrollToSection('featured')}
+              >
+                <Play className="mr-3 h-5 w-5" />
+                Watch Reel
+              </Button>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
             >
-              View Projects
-              <ArrowUpRight className="ml-2 h-5 w-5" />
-            </Button>
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="px-10 py-6 text-lg border-primary/30 hover:bg-primary/5 hover:border-primary transition-all duration-500 rounded-xl font-semibold backdrop-blur-sm"
+                onClick={() => scrollToSection('projects')}
+              >
+                View Projects
+                <ArrowUpRight className="ml-3 h-5 w-5" />
+              </Button>
+            </motion.div>
           </motion.div>
         </motion.div>
         
@@ -182,13 +229,30 @@ function HeroSection() {
 
 // Featured Project Section
 function FeaturedProjectSection() {
-  // Get the most impressive project (Sarfira - Top 5 most viewed trailers of 2024)
+  const { projects, loading } = useProjects()
+  // Get the most impressive project (ASUS ROG Strix - Top 5 Tech Commercial 2024)
   const featuredProject = projects.find(p => p.id === "p12") || projects[0]
   const [showFeaturedVideo, setShowFeaturedVideo] = useState(false)
-  const featuredVideoId = featuredProject.videoUrl ? getYouTubeVideoId(featuredProject.videoUrl) : null
+  const featuredVideoId = featuredProject?.videoUrl ? getYouTubeVideoId(featuredProject.videoUrl) : null
+
+  if (loading) {
+    return (
+      <section id="featured" className="py-24 px-6">
+        <div className="mx-auto w-full max-w-6xl">
+          <div className="animate-pulse">
+            <div className="h-8 bg-muted rounded w-1/3 mx-auto mb-4"></div>
+            <div className="h-4 bg-muted rounded w-2/3 mx-auto mb-8"></div>
+            <div className="aspect-video bg-muted rounded-lg"></div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (!featuredProject) return null
   
   return (
-    <section id="featured" className="py-24 px-6">
+    <section id="featured" className="py-32 px-6">
       <div className="mx-auto w-full max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -387,12 +451,39 @@ function getYouTubeVideoId(url: string): string | null {
 
 // Projects Section
 function ProjectsSection() {
+  const { projects, loading } = useProjects()
   // Get a selection of diverse projects showcasing different types of work
   const displayProjects = projects.slice(0, 6)
-  const [playingVideo, setPlayingVideo] = useState<string | null>(null)
+  const [selectedVideo, setSelectedVideo] = useState<{url: string, title: string} | null>(null)
+
+  if (loading) {
+    return (
+      <section id="projects" className="py-24 px-6">
+        <div className="mx-auto w-full max-w-6xl">
+          <div className="text-center mb-16">
+            <div className="animate-pulse">
+              <div className="h-12 bg-muted rounded w-1/3 mx-auto mb-4"></div>
+              <div className="h-4 bg-muted rounded w-2/3 mx-auto"></div>
+            </div>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="aspect-video bg-muted rounded-t-lg mb-4"></div>
+                <div className="p-6">
+                  <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-muted rounded w-1/2"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
-    <section id="projects" className="py-24 px-6">
+    <section id="projects" className="py-32 px-6">
       <div className="mx-auto w-full max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -401,18 +492,16 @@ function ProjectsSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl sm:text-5xl font-bold mb-4 text-foreground">
+          <h2 className="text-4xl sm:text-6xl font-black mb-6 text-foreground tracking-tight">
             Recent Work
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground/80 text-xl max-w-3xl mx-auto leading-relaxed font-light">
             A selection of projects spanning commercials, narrative films, and award-winning content
           </p>
         </motion.div>
         
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayProjects.map((project, index) => {
-            const videoId = project.videoUrl ? getYouTubeVideoId(project.videoUrl) : null
-            const isPlaying = playingVideo === project.id
             
             return (
               <motion.div
@@ -422,38 +511,30 @@ function ProjectsSection() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
-                <Card className="bg-card border-border hover:border-primary/50 transition-all duration-300 group">
+                <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-700 group transform hover:-translate-y-3 rounded-2xl">
                   <CardContent className="p-0">
-                    <div className="aspect-video bg-muted flex items-center justify-center overflow-hidden rounded-t-lg relative">
-                      {isPlaying && videoId ? (
-                        <iframe
-                          src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
-                          title={project.title}
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          className="w-full h-full"
-                        />
-                      ) : (
-                        <>
-                          <img 
-                            src={`https://picsum.photos/seed/${project.id}/400/225`}
-                            alt={project.title}
-                            className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ${videoId ? 'cursor-pointer' : ''}`}
-                            onClick={() => videoId && setPlayingVideo(project.id)}
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = `https://via.placeholder.com/400x225/374151/9ca3af?text=${encodeURIComponent(project.title.substring(0, 15))}`;
-                            }}
-                          />
-                          <div 
-                            className={`absolute inset-0 bg-black/30 flex items-center justify-center ${videoId ? 'cursor-pointer' : ''}`}
-                            onClick={() => videoId && setPlayingVideo(project.id)}
-                          >
-                            <Play className="h-8 w-8 text-white" />
-                          </div>
-                        </>
-                      )}
+                    <div 
+                      className="aspect-video bg-muted/30 flex items-center justify-center overflow-hidden rounded-t-2xl relative cursor-pointer"
+                      onClick={() => project.videoUrl && setSelectedVideo({url: project.videoUrl, title: project.title})}
+                    >
+                      <img 
+                        src={`https://picsum.photos/seed/${project.id}/400/225`}
+                        alt={project.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = `https://via.placeholder.com/400x225/374151/9ca3af?text=${encodeURIComponent(project.title.substring(0, 15))}`;
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                        <motion.div 
+                          className="bg-white/10 backdrop-blur-sm rounded-full p-4"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <Play className="h-6 w-6 text-white" />
+                        </motion.div>
+                      </div>
                     </div>
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-3">
@@ -507,6 +588,13 @@ function ProjectsSection() {
           })}
         </div>
       </div>
+      
+      <YouTubeModal 
+        isOpen={selectedVideo !== null}
+        onClose={() => setSelectedVideo(null)}
+        videoUrl={selectedVideo?.url}
+        title={selectedVideo?.title || ""}
+      />
     </section>
   )
 }
